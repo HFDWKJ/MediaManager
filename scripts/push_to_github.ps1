@@ -47,18 +47,30 @@ function Find-Gh {
 $git = Find-Git
 Write-Host "Using git: $git" -ForegroundColor Cyan
 
-if (-not (Test-Path ".git")) {
-  & $git init
-  & $git branch -M main
+$authorName = "Dong, Zhexi"
+$authorEmail = "HFDWKJ@users.noreply.github.com"
+$versionFile = Join-Path $PWD "src\version.py"
+if (Test-Path $versionFile) {
+  $v = Get-Content $versionFile -Raw
+  if ($v -match 'DEVELOPER\s*=\s*"([^"]+)"') { $authorName = $Matches[1] }
+}
+function Invoke-Git {
+  param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Args)
+  & $git -c "user.name=$authorName" -c "user.email=$authorEmail" @Args
 }
 
-& $git add -A
-$status = & $git status --porcelain
+if (-not (Test-Path ".git")) {
+  Invoke-Git init
+  Invoke-Git branch -M main
+}
+
+Invoke-Git add -A
+$status = Invoke-Git status --porcelain
 if (-not $status) {
   Write-Host "Nothing to commit - working tree clean." -ForegroundColor Yellow
 } else {
   $msg = "Media Manager v0.0.1 - initial GitHub sync"
-  & $git commit -m $msg
+  Invoke-Git commit -m $msg
   Write-Host "Committed changes." -ForegroundColor Green
 }
 
@@ -78,7 +90,7 @@ if (-not $remote) {
     }
     throw "No remote configured. Pass -RepoUrl https://github.com/USER/REPO.git"
   }
-  & $git remote add origin $RepoUrl
+  Invoke-Git remote add origin $RepoUrl
   $remote = $RepoUrl
   Write-Host "Added remote origin: $remote" -ForegroundColor Cyan
 }
@@ -88,6 +100,17 @@ if ($SkipPush) {
   exit 0
 }
 
-& $git push -u origin main
+& $git push -u origin main 2>&1 | ForEach-Object { $_; if ($_ -match "could not read Username|Authentication failed|403|401") { $script:authFailed = $true } }
+if ($LASTEXITCODE -ne 0) {
+  Write-Host ""
+  Write-Host "Push failed - GitHub authentication required." -ForegroundColor Red
+  Write-Host "Option A: Install GitHub CLI and sign in:" -ForegroundColor Yellow
+  Write-Host "  winget install GitHub.cli" -ForegroundColor Gray
+  Write-Host "  gh auth login" -ForegroundColor Gray
+  Write-Host "  git push -u origin main" -ForegroundColor Gray
+  Write-Host "Option B: Use a Personal Access Token when prompted for password:" -ForegroundColor Yellow
+  Write-Host "  https://github.com/settings/tokens" -ForegroundColor Gray
+  exit $LASTEXITCODE
+}
 Write-Host ""
 Write-Host "Pushed to: $remote" -ForegroundColor Green
