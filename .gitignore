@@ -1,0 +1,32 @@
+.venv/
+dist/
+dist_portal/
+dist_installer/
+dist/nuitka_build/
+__pycache__/
+*.pyc
+*.pyo
+*.pyo
+
+# Local / portable user data (do not commit)
+data/catalog.db
+data/config.json
+data/logs/
+portable.marker
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Secrets
+.env
+*.pem
+
+# Build artifacts
+*.spec.bak
+build/
+*.egg-info/
