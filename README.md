@@ -158,6 +158,23 @@ scripts/
 
 See `media_manager_plan.md` for the full development plan.
 
+## Application updates (v0.0.2+)
+
+The app checks [GitHub Releases](https://github.com/HFDWKJ/MediaManager/releases) for newer versions.
+
+- **On startup** (optional, default on): prompts when a newer release is available.
+- **Options → Check for updates…**: manual check and install.
+- **Settings**: disable startup checks under **Updates**.
+
+Publish a release with assets named like the build outputs:
+
+| Edition | Asset name |
+|---------|------------|
+| Installer | `MediaManagerSetup_0.0.2.exe` |
+| Portable | `MediaManagerPortal_v0.0.2.zip` |
+
+Tag the release `v0.0.2` (or `0.0.2`). Release notes in the GitHub release body appear in the update dialog.
+
 ## Changelog
 
 Release notes live in `CHANGELOG.md` at the project root. They appear in **Options → About…** inside the app. Add a new `## version — date` section for each release.

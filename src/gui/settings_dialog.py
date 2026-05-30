@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from PyQt6.QtWidgets import (
+    QCheckBox,
     QComboBox,
     QDialog,
     QDialogButtonBox,
@@ -34,6 +35,11 @@ class SettingsDialog(QDialog):
         if idx >= 0:
             self.theme_combo.setCurrentIndex(idx)
         form.addRow("Theme:", self.theme_combo)
+        self.check_updates_cb = QCheckBox("Check for updates when the application starts")
+        self.check_updates_cb.setChecked(
+            bool(app_config.get("update", "check_on_startup", default=True))
+        )
+        form.addRow("Updates:", self.check_updates_cb)
         layout.addLayout(form)
 
         hint = QLabel(
@@ -54,3 +60,14 @@ class SettingsDialog(QDialog):
     def selected_theme(self) -> str:
         data = self.theme_combo.currentData()
         return normalize_theme(str(data) if data else THEME_DARK)
+
+    def check_updates_on_startup(self) -> bool:
+        return self.check_updates_cb.isChecked()
+
+    def apply_to_config(self, app_config: AppConfig) -> None:
+        if "ui" not in app_config.raw or not isinstance(app_config.raw["ui"], dict):
+            app_config.raw["ui"] = {}
+        app_config.raw["ui"]["theme"] = self.selected_theme()
+        if "update" not in app_config.raw or not isinstance(app_config.raw["update"], dict):
+            app_config.raw["update"] = {}
+        app_config.raw["update"]["check_on_startup"] = self.check_updates_on_startup()

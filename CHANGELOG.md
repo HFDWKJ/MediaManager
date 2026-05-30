@@ -2,6 +2,20 @@
 
 All notable changes to Media Manager are documented here.
 
+## 0.0.2 — 2026-05-29
+
+Developer: **Dong, Zhexi**
+
+### Added
+- **Automatic update check on startup** — after launch, checks GitHub for a newer release; prompts to download and update or choose **Later** (same version is not prompted again until a newer release appears)
+- **Options → Check for updates…** — manual check; download and apply the latest installer (installed edition) or portable zip (portal edition)
+- **Settings → Updates** — toggle **Check for updates when the application starts**
+- Updates are fetched from [GitHub Releases](https://github.com/HFDWKJ/MediaManager/releases) (`MediaManagerSetup_*.exe` or `MediaManagerPortal_v*.zip`)
+
+### Notes
+- Running from source opens the releases page in the browser instead of in-app install
+- Publish a GitHub release with matching asset names for updates to be offered
+
 ## 0.0.1 — 2026-05-29
 
 Developer: **Dong, Zhexi**

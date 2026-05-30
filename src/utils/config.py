@@ -15,6 +15,11 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "ui": {
         "theme": "dark",
     },
+    "update": {
+        "check_on_startup": True,
+        "github_repo": "HFDWKJ/MediaManager",
+        "dismissed_version": "",
+    },
     "library_roots": [],
     "scan": {
         "skip_extensions": [".crdownload", ".part", ".tmp", ".aria2"],

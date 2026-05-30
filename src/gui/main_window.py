@@ -48,6 +48,7 @@ from gui.dg_theme import (
 )
 from gui.reorganize_dialog import ReorganizeDialog
 from gui.settings_dialog import SettingsDialog
+from gui.update_dialog import UpdateController
 from gui.storage_map_bar import StorageMapBar
 from core.device_types import DEVICE_TYPE_LABELS, normalize_device_type
 from gui.workers import DiscoverWorker
@@ -141,6 +142,8 @@ class MainWindow(QMainWindow):
         status.addPermanentWidget(self.progress)
         self.setStatusBar(status)
 
+        self._update_controller = UpdateController(self, self.app_config)
+
         self._apply_dg_theme()
         self.db.ensure_config_roots(self.app_config.library_roots)
         self.library_panel.refresh(rebuild=True)
@@ -148,6 +151,7 @@ class MainWindow(QMainWindow):
         self._filter_root_id = None
         self.reload_extractions()
         self._update_status()
+        self._update_controller.schedule_startup_check()
 
     def _apply_dg_theme(self, theme: str | None = None) -> None:
         if theme is not None:
@@ -164,7 +168,12 @@ class MainWindow(QMainWindow):
         dlg = SettingsDialog(self.app_config, self)
         if dlg.exec() != QDialog.DialogCode.Accepted:
             return
-        self._set_theme(dlg.selected_theme(), persist=True)
+        dlg.apply_to_config(self.app_config)
+        save_config(self.app_config)
+        self._set_theme(dlg.selected_theme(), persist=False)
+
+    def _check_for_updates(self) -> None:
+        self._update_controller.check_for_updates_manual()
 
     def _open_about(self) -> None:
         dlg = AboutDialog(self)
@@ -395,6 +404,7 @@ class MainWindow(QMainWindow):
         theme_group.addAction(self._theme_light_action)
 
         options_menu.addSeparator()
+        options_menu.addAction(self._action("Check for updates…", self._check_for_updates))
         options_menu.addAction(self._action("About…", self._open_about))
 
         view_menu = menu.addMenu("View")
