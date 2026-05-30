@@ -56,29 +56,25 @@ Legacy alias:
 .\scripts\build_exe.ps1
 ```
 
-## Windows installer (with shortcut & uninstall)
+## Windows installer (Nuitka)
 
-One command builds the app and compiles the installer:
+Build the standalone app and a single-file setup executable (no Inno Setup):
 
 ```powershell
 .\scripts\build_installer.ps1
 ```
 
-Requirements:
-
-- [Inno Setup 6](https://jrsoftware.org/isinfo.php) installed (`ISCC.exe`)
-
 Output:
 
-- `dist_installer\MediaManagerSetup_0.0.1.exe` (version follows `src/version.py`)
+- `dist_installer\MediaManagerSetup_0.0.2.exe` (version follows `src/version.py`)
 
 The installer will:
 
-- Install into `C:\Program Files\Media Manager` by default.
-- Create a Start Menu entry and optional desktop shortcut.
-- Register an uninstaller in “Apps & features”.
+- Install into `C:\Program Files\Media Manager` by default (folder picker when run interactively).
+- Create a Start Menu shortcut.
+- Register an uninstaller in **Apps & features** (`Uninstall.exe` in the install folder).
 
-If you need automatic **VC++ runtime** install, put `vcredist_x64.exe` next to `installers\media_manager.iss` and uncomment the related lines in `[Files]` and `[Run]`.
+Silent flags (used by in-app updates): `/VERYSILENT`, `/SUPPRESSMSGBOXES`, `/NORESTART`, `/CLOSEAPPLICATIONS`, optional `/DIR=...`.
 
 ## Quick test workflow
 
@@ -158,6 +154,11 @@ scripts/
 
 See `media_manager_plan.md` for the full development plan.
 
+## Roadmap & tracking
+
+- **[docs/ROADMAP.md](docs/ROADMAP.md)** — version plans and v0.0.3 task checklist
+- **[GitHub Issues / Milestones](https://github.com/HFDWKJ/MediaManager/milestones)** — development tracking
+
 ## Application updates (v0.0.2+)
 
 The app checks [GitHub Releases](https://github.com/HFDWKJ/MediaManager/releases) for newer versions.
@@ -170,7 +171,7 @@ Publish a release with assets named like the build outputs:
 
 | Edition | Asset name |
 |---------|------------|
-| Installer | `MediaManagerSetup_0.0.2.exe` |
+| Installer (Nuitka setup exe) | `MediaManagerSetup_0.0.2.exe` |
 | Portable | `MediaManagerPortal_v0.0.2.zip` |
 
 Tag the release `v0.0.2` (or `0.0.2`). Release notes in the GitHub release body appear in the update dialog.

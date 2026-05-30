@@ -31,3 +31,4 @@ desktop.ini
 build/
 *.egg-info/
 installers/*.txt
+test_install_out*/
