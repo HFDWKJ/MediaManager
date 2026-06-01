@@ -7,6 +7,7 @@ All notable changes to Media Manager are documented here.
 Developer: **Dong, Zhexi**
 
 ### Fixed
+- In-app update launches the setup installer with UAC elevation (`runas`) so Windows does not return WinError 740
 - In-app update scans all stable (non-prerelease) GitHub releases and picks the newest matching `MediaManagerSetup_*.exe`, so older apps are not confused when a develop-only release has zip-only assets
 - Clearer error when Windows Defender blocks the installer; downloads go to `%LOCALAPPDATA%\MediaManager\Updates\`
 

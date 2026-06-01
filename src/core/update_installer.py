@@ -40,6 +40,14 @@ def format_install_error(
     *,
     installer_path: Path | None = None,
 ) -> str:
+    code = getattr(exc, "winerror", None) or getattr(exc, "errno", None)
+    if code == 740:
+        return (
+            "The update installer requires administrator approval.\n\n"
+            "When Windows shows the UAC prompt, choose Yes to continue."
+        )
+    if code in (5, 1223):
+        return "Update cancelled — administrator approval was not granted."
     if is_windows_security_block(exc):
         path_line = f"\n\nInstaller file:\n{installer_path}" if installer_path else ""
         return (
@@ -94,6 +102,29 @@ def apply_update(package_path: Path, asset: ReleaseAsset) -> None:
     _apply_installer_update(package_path)
 
 
+def _quote_windows_cmd_arg(value: str) -> str:
+    if not value or any(c in value for c in ' \t"'):
+        return '"' + value.replace('"', r"\"") + '"'
+    return value
+
+
+def _shell_execute_installer(installer_path: Path, params: list[str]) -> None:
+    """Launch the setup exe with UAC elevation (required by --windows-uac-admin)."""
+    import ctypes
+
+    param_str = " ".join(_quote_windows_cmd_arg(p) for p in params)
+    result = ctypes.windll.shell32.ShellExecuteW(  # type: ignore[attr-defined]
+        None,
+        "runas",
+        str(installer_path),
+        param_str,
+        None,
+        1,  # SW_SHOWNORMAL
+    )
+    if result <= 32:
+        raise OSError(result, "ShellExecute failed", str(installer_path))
+
+
 def _apply_installer_update(installer_path: Path) -> None:
     if not installer_path.is_file():
         raise UpdateInstallError(f"Installer not found: {installer_path}")
@@ -102,10 +133,13 @@ def _apply_installer_update(installer_path: Path) -> None:
     if install_dir.is_dir():
         params.append(f'/DIR={install_dir}')
     try:
-        subprocess.Popen(
-            [str(installer_path), *params],
-            close_fds=True,
-        )
+        if sys.platform == "win32":
+            _shell_execute_installer(installer_path, params)
+        else:
+            subprocess.Popen(
+                [str(installer_path), *params],
+                close_fds=True,
+            )
     except OSError as e:
         raise UpdateInstallError(
             format_install_error(e, installer_path=installer_path)
