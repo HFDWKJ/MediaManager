@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  <b>버전:</b> 0.0.3 · <b>개발자:</b> Dong, Zhexi
+  <b>버전:</b> 0.0.4 · <b>개발자:</b> Dong, Zhexi
 </p>
 
 ---
@@ -61,8 +61,8 @@
 
 | 에디션 | 파일 |
 |--------|------|
-| 설치판 | `MediaManagerSetup_0.0.3.exe` |
-| 포터블 zip | `MediaManagerPortal_v0.0.3.zip` |
+| 설치판 | `MediaManagerSetup_0.0.4.exe` |
+| 포터블 zip | `MediaManagerPortal_v0.0.4.zip` |
 
 > [!NOTE]
 > **Smart App Control:** 서명되지 않은 exe는 Windows 11에서 차단될 수 있습니다. 테스트 PC에서 SAC를 끄거나, 배포용으로 설치 프로그램에 서명하세요.
@@ -140,7 +140,7 @@ python src\main.py
 
 ```powershell
 .\scripts\build_installer.ps1
-# → dist_installer\MediaManagerSetup_0.0.3.exe
+# → dist_installer\MediaManagerSetup_0.0.4.exe
 ```
 
 앱 내 업데이트 무음 플래그: `/VERYSILENT`, `/SUPPRESSMSGBOXES`, `/NORESTART`, `/CLOSEAPPLICATIONS`, 선택 `/DIR=...`.
@@ -149,7 +149,7 @@ python src\main.py
 
 ```powershell
 .\scripts\build_portal.ps1
-# → dist_portal\MediaManagerPortal_v0.0.3.zip
+# → dist_portal\MediaManagerPortal_v0.0.4.zip
 ```
 
 ---
@@ -180,7 +180,7 @@ python src\main.py
 
 - **시작 시 확인**(기본 켜짐) 및 **Options → Check for updates…**
 - **Settings → Updates**에서 끄기
-- 릴리스 태그 `v0.0.3`; 릴리스 노트는 업데이트 대화상자에 표시
+- 릴리스 태그 `v0.0.4`; 릴리스 노트는 업데이트 대화상자에 표시
 - 비공개 저장소: config의 `update.github_token` 또는 `GITHUB_TOKEN` 환경 변수
 
 ---
@@ -213,7 +213,7 @@ CHANGELOG.md           릴리스 노트 (About 대화상자)
 | [README.fr.md](README.fr.md) | Français |
 | [README.de.md](README.de.md) | Deutsch |
 | [README.es.md](README.es.md) | Español |
-| [docs/ROADMAP.md](docs/ROADMAP.md) | 버전 계획 및 v0.0.3 체크리스트 |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | 버전 계획 및 v0.0.4 체크리스트 |
 | [CHANGELOG.md](CHANGELOG.md) | 릴리스 기록 |
 | [GitHub Milestones](https://github.com/HFDWKJ/MediaManager/milestones) | 이슈 추적 |
 

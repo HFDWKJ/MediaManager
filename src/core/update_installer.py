@@ -12,8 +12,9 @@ import zipfile
 from pathlib import Path
 from typing import Callable
 
-from core.update_checker import ReleaseAsset, USER_AGENT
+from core.update_checker import ReleaseAsset, github_request_headers
 from utils.paths import application_root, is_portable_mode
+from utils.runtime import is_compiled
 
 log = logging.getLogger(__name__)
 
@@ -30,12 +31,13 @@ def download_release_asset(
     *,
     progress: ProgressCallback | None = None,
     timeout: float = 300.0,
+    github_token: str = "",
 ) -> Path:
     dest_dir.mkdir(parents=True, exist_ok=True)
     dest_path = dest_dir / asset.filename
     req = urllib.request.Request(
         asset.download_url,
-        headers={"User-Agent": USER_AGENT},
+        headers=github_request_headers(github_token, accept="application/octet-stream"),
     )
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
@@ -138,4 +140,4 @@ def _write_portable_updater_script(payload_dir: Path, app_root: Path) -> Path:
 
 
 def can_apply_in_app_update() -> bool:
-    return getattr(sys, "frozen", False)
+    return is_compiled()

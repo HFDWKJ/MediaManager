@@ -6,12 +6,14 @@ import os
 import sys
 from pathlib import Path
 
+from utils.runtime import is_compiled
+
 PORTABLE_MARKER = "portable.marker"
 DATA_DIR_NAME = "data"
 
 
 def application_root() -> Path:
-    if getattr(sys, "frozen", False):
+    if is_compiled():
         return Path(sys.executable).resolve().parent
     return Path(__file__).resolve().parents[2]
 

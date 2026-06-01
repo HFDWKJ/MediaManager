@@ -110,9 +110,16 @@ class UpdateAvailableDialog(QDialog):
 class UpdateProgressDialog(QDialog):
     """Download and apply an update package."""
 
-    def __init__(self, release: ReleaseAsset, parent=None) -> None:
+    def __init__(
+        self,
+        release: ReleaseAsset,
+        *,
+        github_token: str = "",
+        parent=None,
+    ) -> None:
         super().__init__(parent)
         self.release = release
+        self._github_token = github_token
         self._worker: UpdateDownloadWorker | None = None
 
         self.setWindowTitle("Downloading update")
@@ -127,7 +134,7 @@ class UpdateProgressDialog(QDialog):
         self.progress.setValue(0)
         layout.addWidget(self.progress)
 
-        self._worker = UpdateDownloadWorker(release)
+        self._worker = UpdateDownloadWorker(release, github_token=self._github_token)
         self._worker.progress.connect(self._on_progress)
         self._worker.finished_ok.connect(self._on_finished)
         self._worker.error.connect(self._on_error)
@@ -187,6 +194,12 @@ class UpdateController:
             self._config.get("update", "github_repo", default="HFDWKJ/MediaManager")
         ).strip() or "HFDWKJ/MediaManager"
 
+    def _github_token(self) -> str:
+        from core.update_checker import resolve_github_token
+
+        configured = str(self._config.get("update", "github_token", default="") or "")
+        return resolve_github_token(configured)
+
     def check_on_startup_enabled(self) -> bool:
         return bool(self._config.get("update", "check_on_startup", default=True))
 
@@ -217,7 +230,10 @@ class UpdateController:
     def _run_check(self, *, on_startup: bool) -> None:
         if self._check_worker is not None and self._check_worker.isRunning():
             return
-        self._check_worker = UpdateCheckWorker(self._repo())
+        self._check_worker = UpdateCheckWorker(
+            self._repo(),
+            github_token=self._github_token(),
+        )
         self._check_worker.finished_ok.connect(
             lambda release: self._on_check_done(release, on_startup=on_startup)
         )
@@ -264,5 +280,9 @@ class UpdateController:
         if not can_apply_in_app_update():
             return
 
-        progress = UpdateProgressDialog(release, parent=self._window)
+        progress = UpdateProgressDialog(
+            release,
+            github_token=self._github_token(),
+            parent=self._window,
+        )
         progress.exec()

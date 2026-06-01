@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  <b>Version:</b> 0.0.3 · <b>Developer:</b> Dong, Zhexi
+  <b>Version:</b> 0.0.4 · <b>Developer:</b> Dong, Zhexi
 </p>
 
 ---
@@ -61,8 +61,8 @@ Pre-built binaries are published on **[GitHub Releases](https://github.com/HFDWK
 
 | Edition | File |
 |---------|------|
-| Installer | `MediaManagerSetup_0.0.3.exe` |
-| Portable zip | `MediaManagerPortal_v0.0.3.zip` |
+| Installer | `MediaManagerSetup_0.0.4.exe` |
+| Portable zip | `MediaManagerPortal_v0.0.4.zip` |
 
 > [!NOTE]
 > **Smart App Control:** Unsigned builds may be blocked on Windows 11. Turn off SAC on a test machine, or sign the installer for production use.
@@ -140,7 +140,7 @@ Build scripts install dependencies automatically. Nuitka uses MSVC when availabl
 
 ```powershell
 .\scripts\build_installer.ps1
-# → dist_installer\MediaManagerSetup_0.0.3.exe
+# → dist_installer\MediaManagerSetup_0.0.4.exe
 ```
 
 Silent flags for in-app updates: `/VERYSILENT`, `/SUPPRESSMSGBOXES`, `/NORESTART`, `/CLOSEAPPLICATIONS`, optional `/DIR=...`.
@@ -149,7 +149,7 @@ Silent flags for in-app updates: `/VERYSILENT`, `/SUPPRESSMSGBOXES`, `/NORESTART
 
 ```powershell
 .\scripts\build_portal.ps1
-# → dist_portal\MediaManagerPortal_v0.0.3.zip
+# → dist_portal\MediaManagerPortal_v0.0.4.zip
 ```
 
 ---
@@ -180,7 +180,7 @@ Copy the **entire folder** (including `data\`) to move catalog and settings to a
 
 - **Startup check** (on by default) and **Options → Check for updates…**
 - Disable in **Settings → Updates**
-- Tag releases `v0.0.3`; release notes appear in the update dialog
+- Tag releases `v0.0.4`; release notes appear in the update dialog
 - Private repos: set `update.github_token` in config or `GITHUB_TOKEN` env var
 
 ---
@@ -213,7 +213,7 @@ CHANGELOG.md           Release notes (shown in About dialog)
 | [README.de.md](README.de.md) | Deutsch |
 | [README.ko.md](README.ko.md) | 한국어 |
 | [README.es.md](README.es.md) | Español |
-| [docs/ROADMAP.md](docs/ROADMAP.md) | Version plans and v0.0.3 checklist |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Version plans and v0.0.4 checklist |
 | [CHANGELOG.md](CHANGELOG.md) | Release history |
 | [GitHub Milestones](https://github.com/HFDWKJ/MediaManager/milestones) | Issue tracking |
 | [media_manager_plan.md](media_manager_plan.md) | Full Cursor development plan |

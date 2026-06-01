@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  <b>Version:</b> 0.0.3 · <b>Entwickler:</b> Dong, Zhexi
+  <b>Version:</b> 0.0.4 · <b>Entwickler:</b> Dong, Zhexi
 </p>
 
 ---
@@ -61,8 +61,8 @@ Vorkompilierte Binaries auf **[GitHub Releases](https://github.com/HFDWKJ/MediaM
 
 | Edition | Datei |
 |---------|-------|
-| Installer | `MediaManagerSetup_0.0.3.exe` |
-| Portable Zip | `MediaManagerPortal_v0.0.3.zip` |
+| Installer | `MediaManagerSetup_0.0.4.exe` |
+| Portable Zip | `MediaManagerPortal_v0.0.4.zip` |
 
 > [!NOTE]
 > **Smart App Control:** Nicht signierte Builds können unter Windows 11 blockiert werden. SAC auf Testrechnern deaktivieren oder Installer für Produktion signieren.
@@ -140,7 +140,7 @@ Build-Skripte installieren Abhängigkeiten automatisch. Nuitka nutzt MSVC wenn v
 
 ```powershell
 .\scripts\build_installer.ps1
-# → dist_installer\MediaManagerSetup_0.0.3.exe
+# → dist_installer\MediaManagerSetup_0.0.4.exe
 ```
 
 Stille Flags für In-App-Updates: `/VERYSILENT`, `/SUPPRESSMSGBOXES`, `/NORESTART`, `/CLOSEAPPLICATIONS`, optional `/DIR=...`.
@@ -149,7 +149,7 @@ Stille Flags für In-App-Updates: `/VERYSILENT`, `/SUPPRESSMSGBOXES`, `/NORESTAR
 
 ```powershell
 .\scripts\build_portal.ps1
-# → dist_portal\MediaManagerPortal_v0.0.3.zip
+# → dist_portal\MediaManagerPortal_v0.0.4.zip
 ```
 
 ---
@@ -180,7 +180,7 @@ Zum Migrieren **gesamten Ordner** (inkl. `data\`) kopieren.
 
 - **Startprüfung** (standardmäßig an) und **Options → Check for updates…**
 - Deaktivieren unter **Settings → Updates**
-- Release-Tag `v0.0.3`; Release Notes im Update-Dialog
+- Release-Tag `v0.0.4`; Release Notes im Update-Dialog
 - Private Repos: `update.github_token` in Config oder `GITHUB_TOKEN` Umgebungsvariable
 
 ---
@@ -213,7 +213,7 @@ CHANGELOG.md           Release Notes (About-Dialog)
 | [README.fr.md](README.fr.md) | Français |
 | [README.ko.md](README.ko.md) | 한국어 |
 | [README.es.md](README.es.md) | Español |
-| [docs/ROADMAP.md](docs/ROADMAP.md) | Versionspläne und v0.0.3-Checkliste |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Versionspläne und v0.0.4-Checkliste |
 | [CHANGELOG.md](CHANGELOG.md) | Release-Verlauf |
 | [GitHub Milestones](https://github.com/HFDWKJ/MediaManager/milestones) | Issue-Tracking |
 

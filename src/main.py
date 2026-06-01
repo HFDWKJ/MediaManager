@@ -18,13 +18,14 @@ from core.device_manager import refresh_all_device_status
 from gui.dg_theme import THEME_DARK, apply_theme, normalize_theme
 from gui.main_window import MainWindow
 from utils.config import load_config
+from utils.runtime import is_compiled
 from utils.logging import setup_logging
 from version import __version__
 
 
 def _app_icon_path() -> Path | None:
     """Find app icon for source runs and packaged runs."""
-    if getattr(sys, "frozen", False):
+    if is_compiled():
         exe_dir = Path(sys.executable).resolve().parent
         bundled = exe_dir / "media_manager_app_icon.ico"
         if bundled.is_file():

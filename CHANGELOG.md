@@ -2,26 +2,37 @@
 
 All notable changes to Media Manager are documented here.
 
-## Unreleased — v0.0.3 (in progress)
+## 0.0.4 — 2026-06-01
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) and [GitHub milestone v0.0.3](https://github.com/HFDWKJ/MediaManager/milestone/1).
+Developer: **Dong, Zhexi**
 
 ### Added
-- Update 1: Added application icon (`assets/media_manager_app_icon.png` + `assets/media_manager_app_icon.ico`)
-- App window now loads icon in both source run and packaged run
-- Nuitka build scripts now embed icon into app exe and installer exe
-- Update 2: Reorganize dialog now shows a graphical progress bar during processing
-- Reorganize progress now displays percentage and ETA (estimated remaining time)
-- Reorganize progress text now shows current item index/total and current filename
+- **Multilingual README** — documentation in English, 简体中文, 日本語, Français, Deutsch, 한국어, and Español with a shared language switcher
+- **Cursor & Vibe Coding** project documentation on the GitHub homepage
+- Optional `update.github_token` config and `GITHUB_TOKEN` / `MEDIA_MANAGER_GITHUB_TOKEN` env support for private-repo updates
 
-### Planned
-- PyQt6 step-by-step installer (Nuitka; no Inno Setup)
-- Installer build/regression checks
-- Library root path relink when drives or NAS paths change
-- Duplicate review UI after hash verification
-- RAR → extraction folder linking (`archive_tracker`)
-- Settings UI for scan, name match, and reorganize options
-- Catalog search, sort, and batch delete
+### Changed
+- App icon refreshed with a **transparent background** and modern flat design (PNG + ICO)
+- README layout redesigned with centered logo, badges, and table of contents (manim-style)
+
+### Fixed
+- **In-app update** now detects Nuitka compiled builds via `utils.runtime.is_compiled()` instead of relying only on `sys.frozen`
+- Packaged apps download and install updates in-app instead of opening the browser when an update is available
+- GitHub update check shows a clear error when a private repository is inaccessible without a token
+- Application root, window icon, and changelog paths use `is_compiled()` for Nuitka standalone runs
+
+## 0.0.3 — 2026-06-01
+
+Developer: **Dong, Zhexi**
+
+### Added
+- Application icon (`assets/media_manager_app_icon.png` + `.ico`) embedded in source and packaged builds
+- Reorganize dialog graphical progress bar with percentage, ETA, and current filename
+- PyQt6 step-by-step installer (Nuitka onefile setup; no Inno Setup)
+
+### Packaging
+- `MediaManagerSetup_0.0.3.exe` — installed edition
+- `MediaManagerPortal_v0.0.3.zip` — portable edition
 
 ## 0.0.2 — 2026-05-29
 

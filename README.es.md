@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  <b>Versión:</b> 0.0.3 · <b>Desarrollador:</b> Dong, Zhexi
+  <b>Versión:</b> 0.0.4 · <b>Desarrollador:</b> Dong, Zhexi
 </p>
 
 ---
@@ -61,8 +61,8 @@ Binarios precompilados en **[GitHub Releases](https://github.com/HFDWKJ/MediaMan
 
 | Edición | Archivo |
 |---------|---------|
-| Instalador | `MediaManagerSetup_0.0.3.exe` |
-| Zip portable | `MediaManagerPortal_v0.0.3.zip` |
+| Instalador | `MediaManagerSetup_0.0.4.exe` |
+| Zip portable | `MediaManagerPortal_v0.0.4.zip` |
 
 > [!NOTE]
 > **Smart App Control:** los ejecutables sin firmar pueden bloquearse en Windows 11. Desactiva SAC en un PC de prueba o firma el instalador para producción.
@@ -140,7 +140,7 @@ Los scripts instalan dependencias automáticamente. Nuitka usa MSVC si está dis
 
 ```powershell
 .\scripts\build_installer.ps1
-# → dist_installer\MediaManagerSetup_0.0.3.exe
+# → dist_installer\MediaManagerSetup_0.0.4.exe
 ```
 
 Flags silenciosos para actualizaciones in-app: `/VERYSILENT`, `/SUPPRESSMSGBOXES`, `/NORESTART`, `/CLOSEAPPLICATIONS`, opcional `/DIR=...`.
@@ -149,7 +149,7 @@ Flags silenciosos para actualizaciones in-app: `/VERYSILENT`, `/SUPPRESSMSGBOXES
 
 ```powershell
 .\scripts\build_portal.ps1
-# → dist_portal\MediaManagerPortal_v0.0.3.zip
+# → dist_portal\MediaManagerPortal_v0.0.4.zip
 ```
 
 ---
@@ -180,7 +180,7 @@ Copia **toda la carpeta** (incluido `data\`) para mover catálogo y ajustes a ot
 
 - **Comprobación al inicio** (activada por defecto) y **Options → Check for updates…**
 - Desactivar en **Settings → Updates**
-- Etiqueta de release `v0.0.3`; las notas aparecen en el diálogo de actualización
+- Etiqueta de release `v0.0.4`; las notas aparecen en el diálogo de actualización
 - Repos privados: `update.github_token` en config o variable `GITHUB_TOKEN`
 
 ---
@@ -213,7 +213,7 @@ CHANGELOG.md           Notas de release (diálogo About)
 | [README.fr.md](README.fr.md) | Français |
 | [README.de.md](README.de.md) | Deutsch |
 | [README.ko.md](README.ko.md) | 한국어 |
-| [docs/ROADMAP.md](docs/ROADMAP.md) | Planes de versión y checklist v0.0.3 |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Planes de versión y checklist v0.0.4 |
 | [CHANGELOG.md](CHANGELOG.md) | Historial de releases |
 | [GitHub Milestones](https://github.com/HFDWKJ/MediaManager/milestones) | Seguimiento de issues |
 

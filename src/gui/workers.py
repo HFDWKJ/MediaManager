@@ -88,15 +88,22 @@ class UpdateCheckWorker(QThread):
     finished_ok = pyqtSignal(object)
     error = pyqtSignal(str)
 
-    def __init__(self, github_repo: str = DEFAULT_GITHUB_REPO) -> None:
+    def __init__(
+        self,
+        github_repo: str = DEFAULT_GITHUB_REPO,
+        *,
+        github_token: str = "",
+    ) -> None:
         super().__init__()
         self.github_repo = github_repo
+        self.github_token = github_token
 
     def run(self) -> None:
         try:
             release = fetch_latest_release(
                 self.github_repo,
                 portable=is_portable_mode(),
+                github_token=self.github_token,
             )
             self.finished_ok.emit(release)
         except UpdateCheckError as e:
@@ -110,9 +117,10 @@ class UpdateDownloadWorker(QThread):
     finished_ok = pyqtSignal(str)
     error = pyqtSignal(str)
 
-    def __init__(self, release: ReleaseAsset) -> None:
+    def __init__(self, release: ReleaseAsset, *, github_token: str = "") -> None:
         super().__init__()
         self.release = release
+        self.github_token = github_token
 
     def run(self) -> None:
         try:
@@ -121,7 +129,12 @@ class UpdateDownloadWorker(QThread):
             def prog(cur: int, total: int) -> None:
                 self.progress.emit(cur, total)
 
-            path = download_release_asset(self.release, dest, progress=prog)
+            path = download_release_asset(
+                self.release,
+                dest,
+                progress=prog,
+                github_token=self.github_token,
+            )
             self.finished_ok.emit(str(path))
         except Exception as e:
             self.error.emit(str(e))

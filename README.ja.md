@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  <b>バージョン：</b>0.0.3 · <b>開発者：</b>Dong, Zhexi
+  <b>バージョン：</b>0.0.4 · <b>開発者：</b>Dong, Zhexi
 </p>
 
 ---
@@ -61,8 +61,8 @@
 
 | 版 | ファイル |
 |----|----------|
-| インストーラー | `MediaManagerSetup_0.0.3.exe` |
-| ポータブル zip | `MediaManagerPortal_v0.0.3.zip` |
+| インストーラー | `MediaManagerSetup_0.0.4.exe` |
+| ポータブル zip | `MediaManagerPortal_v0.0.4.zip` |
 
 > [!NOTE]
 > **Smart App Control：** 署名のない exe は Windows 11 でブロックされる場合があります。テスト機では SAC をオフにするか、本番用にインストーラーに署名してください。
@@ -140,7 +140,7 @@ python src\main.py
 
 ```powershell
 .\scripts\build_installer.ps1
-# → dist_installer\MediaManagerSetup_0.0.3.exe
+# → dist_installer\MediaManagerSetup_0.0.4.exe
 ```
 
 アプリ内更新のサイレントフラグ：`/VERYSILENT`、`/SUPPRESSMSGBOXES`、`/NORESTART`、`/CLOSEAPPLICATIONS`、任意で `/DIR=...`。
@@ -149,7 +149,7 @@ python src\main.py
 
 ```powershell
 .\scripts\build_portal.ps1
-# → dist_portal\MediaManagerPortal_v0.0.3.zip
+# → dist_portal\MediaManagerPortal_v0.0.4.zip
 ```
 
 ---
@@ -180,7 +180,7 @@ python src\main.py
 
 - **起動時チェック**（デフォルト ON）と **Options → Check for updates…**
 - **Settings → Updates** で無効化可能
-- リリースタグ `v0.0.3`；Release ノートは更新ダイアログに表示
+- リリースタグ `v0.0.4`；Release ノートは更新ダイアログに表示
 - プライベートリポジトリ：config の `update.github_token` または `GITHUB_TOKEN` 環境変数
 
 ---
@@ -213,7 +213,7 @@ CHANGELOG.md           リリースノート（About ダイアログ）
 | [README.de.md](README.de.md) | Deutsch |
 | [README.ko.md](README.ko.md) | 한국어 |
 | [README.es.md](README.es.md) | Español |
-| [docs/ROADMAP.md](docs/ROADMAP.md) | バージョン計画と v0.0.3 チェックリスト |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | バージョン計画と v0.0.4 チェックリスト |
 | [CHANGELOG.md](CHANGELOG.md) | リリース履歴 |
 | [GitHub Milestones](https://github.com/HFDWKJ/MediaManager/milestones) | Issue 追跡 |
 

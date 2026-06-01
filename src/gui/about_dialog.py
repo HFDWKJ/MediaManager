@@ -16,11 +16,12 @@ from PyQt6.QtWidgets import (
 
 from version import __developer__, __version__
 from utils.paths import data_dir, is_portable_mode
+from utils.runtime import is_compiled
 
 
 def _changelog_path() -> Path | None:
     candidates: list[Path] = []
-    if getattr(sys, "frozen", False):
+    if is_compiled():
         candidates.append(Path(sys.executable).resolve().parent / "CHANGELOG.md")
     repo_root = Path(__file__).resolve().parents[2]
     candidates.append(repo_root / "CHANGELOG.md")

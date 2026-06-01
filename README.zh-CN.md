@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  <b>版本：</b>0.0.3 · <b>开发者：</b>Dong, Zhexi
+  <b>版本：</b>0.0.4 · <b>开发者：</b>Dong, Zhexi
 </p>
 
 ---
@@ -61,8 +61,8 @@
 
 | 版本 | 文件名 |
 |------|--------|
-| 安装版 | `MediaManagerSetup_0.0.3.exe` |
-| 便携版 zip | `MediaManagerPortal_v0.0.3.zip` |
+| 安装版 | `MediaManagerSetup_0.0.4.exe` |
+| 便携版 zip | `MediaManagerPortal_v0.0.4.zip` |
 
 > [!NOTE]
 > **Smart App Control：** 未签名的 exe 可能在 Windows 11 上被拦截。测试机可暂时关闭 SAC，正式分发建议做代码签名。
@@ -147,7 +147,7 @@ python src\main.py
 
 ```powershell
 .\scripts\build_installer.ps1
-# → dist_installer\MediaManagerSetup_0.0.3.exe
+# → dist_installer\MediaManagerSetup_0.0.4.exe
 ```
 
 应用内更新使用的静默参数：`/VERYSILENT`、`/SUPPRESSMSGBOXES`、`/NORESTART`、`/CLOSEAPPLICATIONS`，可选 `/DIR=...`。
@@ -156,7 +156,7 @@ python src\main.py
 
 ```powershell
 .\scripts\build_portal.ps1
-# → dist_portal\MediaManagerPortal_v0.0.3.zip
+# → dist_portal\MediaManagerPortal_v0.0.4.zip
 ```
 
 ---
@@ -187,7 +187,7 @@ python src\main.py
 
 - 启动时自动检查（默认开启），或 **Options → Check for updates…**
 - 在 **Settings → Updates** 中可关闭
-- Release 标签如 `v0.0.3`；Release 说明会显示在更新对话框
+- Release 标签如 `v0.0.4`；Release 说明会显示在更新对话框
 - 私有仓库需在 config 中设置 `update.github_token`，或设置 `GITHUB_TOKEN` 环境变量
 
 ---
@@ -220,7 +220,7 @@ CHANGELOG.md           更新日志（About 对话框中显示）
 | [README.de.md](README.de.md) | Deutsch |
 | [README.ko.md](README.ko.md) | 한국어 |
 | [README.es.md](README.es.md) | Español |
-| [docs/ROADMAP.md](docs/ROADMAP.md) | 版本计划与 v0.0.3 任务清单 |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | 版本计划与 v0.0.4 任务清单 |
 | [CHANGELOG.md](CHANGELOG.md) | 版本更新记录 |
 | [GitHub Milestones](https://github.com/HFDWKJ/MediaManager/milestones) | Issue 跟踪 |
 | [media_manager_plan.md](media_manager_plan.md) | 完整 Cursor 开发计划 |
