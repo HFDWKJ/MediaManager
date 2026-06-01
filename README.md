@@ -1,230 +1,187 @@
-# Media Manager
+<p align="center">
+  <img src="assets/media_manager_app_icon.png" alt="Media Manager" width="128"/>
+</p>
 
-**Version:** 0.0.3 · **Developer:** Dong, Zhexi · **Platform:** Windows 11 (Windows 10+)
+<h1 align="center">Media Manager</h1>
 
-A Windows desktop app to catalog media across multiple drives and devices, detect `[Original Name]` folder duplicates, and reorganize extracted downloads — without moving files off NAS or offline volumes by default.
+<p align="center">
+  <strong>English</strong> · <a href="README.zh-CN.md">简体中文</a>
+</p>
 
-**Repository:** [github.com/HFDWKJ/MediaManager](https://github.com/HFDWKJ/MediaManager)
+<p align="center">
+  <a href="https://github.com/HFDWKJ/MediaManager/releases"><img src="https://img.shields.io/github/v/release/HFDWKJ/MediaManager?label=release&logo=github" alt="Release"/></a>
+  <a href="https://github.com/HFDWKJ/MediaManager"><img src="https://img.shields.io/badge/platform-Windows-0078D6?logo=windows" alt="Windows"/></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.10+-3776AB?logo=python&logoColor=white" alt="Python"/></a>
+  <a href="https://www.riverbankcomputing.com/software/pyqt/"><img src="https://img.shields.io/badge/GUI-PyQt6-41CD52?logo=qt" alt="PyQt6"/></a>
+</p>
+
+<p align="center">
+  Windows desktop app to catalog media across multiple drives and devices,<br/>
+  detect <code>[Original Name]</code> folder duplicates, and reorganize extracted downloads.
+</p>
+
+<p align="center">
+  <b>Version:</b> 0.0.3 · <b>Developer:</b> Dong, Zhexi
+</p>
+
+---
+
+## Table of contents
+
+- [Features](#features)
+- [Download](#download)
+- [Quick start](#quick-start)
+- [Built with Cursor & Vibe Coding](#built-with-cursor--vibe-coding)
+- [Build (Nuitka)](#build-nuitka-only)
+- [Config & data paths](#config--data-paths)
+- [Application updates](#application-updates)
+- [Project structure](#project-structure)
+- [Roadmap & docs](#roadmap--docs)
+- [License](#license)
 
 ---
 
 ## Features
 
-- **Multi-root library** — index folders on local SSD/HDD, NAS, DAS, and USB; catalog stays usable when a device is offline
-- **Two-tier duplicate detection** — fast `[Original Name]` fuzzy match first; SHA-256 hash only when you choose **Verify with Hash**
-- **Reorganize workflow** — flatten extraction folders into `[Collections]` with configurable rename templates and progress UI
-- **Face UID manager** — short unique IDs with nicknames, region, and comments
-- **Portable edition** — `data\` beside the exe for config, database, and logs
-- **Auto-update** — checks [GitHub Releases](https://github.com/HFDWKJ/MediaManager/releases) on startup; in-app download and silent install for packaged builds
-- **DiskGenius-inspired UI** — dark theme, Office-style ribbon, library tree grouped by device type
+| Area | Description |
+|------|-------------|
+| **Multi-root library** | Index folders on SSD/HDD, NAS, DAS, and USB; catalog stays usable when a device is offline |
+| **Duplicate detection** | Tier 1: fast `[Original Name]` fuzzy match · Tier 2: SHA-256 when you choose **Verify with Hash** |
+| **Reorganize** | Flatten extraction folders into `[Collections]` with templates, progress bar, percentage, and ETA |
+| **Face UID** | Short unique IDs with nicknames, region, and comments |
+| **Portable edition** | `data\` beside the exe for config, database, and logs |
+| **Auto-update** | Checks [GitHub Releases](https://github.com/HFDWKJ/MediaManager/releases) on startup |
+| **UI** | DiskGenius-inspired dark theme and Office-style ribbon |
+
+---
+
+## Download
+
+Pre-built binaries are published on **[GitHub Releases](https://github.com/HFDWKJ/MediaManager/releases)**:
+
+| Edition | File |
+|---------|------|
+| Installer | `MediaManagerSetup_0.0.3.exe` |
+| Portable zip | `MediaManagerPortal_v0.0.3.zip` |
+
+> [!NOTE]
+> **Smart App Control:** Unsigned builds may be blocked on Windows 11. Turn off SAC on a test machine, or sign the installer for production use.
+
+---
+
+## Quick start
+
+### Requirements
+
+- Python 3.10+
+- Windows 11 (Windows 10+ supported)
+
+### Setup & run
+
+```powershell
+git clone https://github.com/HFDWKJ/MediaManager.git
+cd MediaManager
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python scripts\create_test_data.py   # optional sample folders
+python src\main.py
+```
+
+### Try the workflow
+
+1. **Add Library Root** — point at `test_data\library` or your download folder.
+2. **Discover / Scan** — index `[Original Name]` extraction folders.
+3. **Review Name Matches** — dismiss, mark different, or **Verify with Hash**.
+4. **Reorganize ([Collections])** — preview flatten/rename.
+5. **Show in Explorer** — open the folder when the device is online.
+
+> [!TIP]
+> Running from source opens the GitHub releases page when you choose **Download and update**. Packaged builds download and install in-app.
 
 ---
 
 ## Built with Cursor & Vibe Coding
 
-This project is a **real-world test of AI-assisted development** using [Cursor](https://cursor.com) and its **Vibe Coding** workflow: describe intent in natural language, let the agent implement and iterate, and refine through running the app and giving feedback.
+This project is a **real-world test of AI-assisted development** with [Cursor](https://cursor.com) and **Vibe Coding**: describe intent in natural language, let the Agent implement, then refine by running the app and giving feedback.
 
-### What we tested
+| Stage | How |
+|-------|-----|
+| **Planning** | [`media_manager_plan.md`](media_manager_plan.md) — phased prompts for each milestone |
+| **Implementation** | Agent built `core/`, `gui/`, packaging scripts, and release flow step by step |
+| **UI iteration** | Screenshot-driven feedback (ribbon, progress bar, filters) |
+| **Release tracking** | [`docs/ROADMAP.md`](docs/ROADMAP.md) + GitHub Issues / Milestones |
 
-| Area | Approach |
-|------|----------|
-| **Planning** | [`media_manager_plan.md`](media_manager_plan.md) — phased technical spec with copy-paste prompts for each milestone |
-| **Implementation** | Cursor Agent built core logic (`core/`), PyQt6 UI (`gui/`), packaging scripts, and GitHub release flow step by step |
-| **UI iteration** | Screenshot-driven feedback (e.g. Office ribbon, toolbar layout, reorganize progress bar) instead of hand-writing every widget |
-| **Debugging** | Agent reads logs, reproduces build failures (Nuitka vs PyInstaller, installer payload paths), and patches in-repo |
-| **Release tracking** | Roadmap in [`docs/ROADMAP.md`](docs/ROADMAP.md), GitHub Issues/Milestones, and CHANGELOG kept in sync with Agent help |
+**Typical loop:** Prompt → Agent edits → run `MediaManager.exe` → screenshot / error feedback → ship release.
 
-### Typical Vibe Coding loop
+> Chinese documentation for this section: **[README.zh-CN.md § Cursor 开发](README.zh-CN.md#使用-cursor-与-vibe-coding-开发)**
 
-1. **Prompt** — paste a phase from `media_manager_plan.md`, or describe a bug/feature in chat (Chinese or English both work).
-2. **Agent edits** — Cursor modifies source, scripts, and docs; runs imports/builds when needed.
-3. **Run & verify** — `python src\main.py` or the packaged `MediaManager.exe` on a real Windows machine.
-4. **Feedback** — share screenshots, expected behavior, or error text; Agent adjusts UI and logic.
-5. **Ship** — bump `src/version.py`, update `CHANGELOG.md`, build with Nuitka, upload to GitHub Releases.
+### Practical notes
 
-### Practical notes from this project
-
-- **Keep a living plan** — `media_manager_plan.md` gives the Agent stable context across long sessions.
-- **Prefer small phases** — database → scanner → GUI → packaging reduces bad assumptions.
-- **Test packaged builds early** — Nuitka uses `__compiled__`, not only `sys.frozen`; installer and auto-update logic must be validated on compiled exe, not just `python src\main.py`.
-- **User rules help** — e.g. “Nuitka only, no Inno Setup” persists across chats via Cursor rules.
-- **Public releases simplify updates** — GitHub Releases API works without a token when the repo is public.
-
-### 中文摘要 · 使用 Cursor 与 Vibe Coding 开发
-
-本项目全程在 **Cursor** 中用 **Vibe Coding**（自然语言驱动 + Agent 写代码 + 人工验收）方式迭代：
-
-- **需求与分阶段计划** 写在 [`media_manager_plan.md`](media_manager_plan.md)，按 Phase 逐步交给 Agent 实现。
-- **界面与交互** 通过截图反馈快速调整（Ribbon、进度条、筛选栏等），无需从零手写全部 UI。
-- **打包与发布** 同样由 Agent 维护脚本（Nuitka 独立目录、安装包、便携版 zip、自动更新）。
-- **协作方式**：中文或英文描述问题均可；运行 exe 验证后把现象或截图发回，Agent 继续改代码。
-
-适合作为「个人工具 + AI 结对编程」的参考样本：计划文档 + 里程碑 + 可运行交付物，而不是一次性生成的 demo。
-
----
-
-## Requirements
-
-- Python 3.10+
-- Windows 11 (tested on Windows 10+)
-
-## Setup
-
-```powershell
-cd c:\_Workspace\DevPlan
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
-
-## Create test data
-
-```powershell
-python scripts\create_test_data.py
-```
-
-Creates `test_data\library\` with sample `[Cool Video]` folders.
-
-## Run the app
-
-```powershell
-python src\main.py
-```
-
-Running from source opens the GitHub releases page in the browser when you choose **Download and update**. Packaged builds use in-app download and silent install.
+- Keep a living plan (`media_manager_plan.md`) for stable Agent context across sessions.
+- Test **packaged** Nuitka builds early — runtime detection differs from `python src\main.py`.
+- Packaging rule: **Nuitka only**, no Inno Setup (enforced via Cursor user rules).
+- Public GitHub Releases simplify auto-update (no token required).
 
 ---
 
 ## Build (Nuitka only)
 
-**Packaging rule:** Nuitka only — no Inno Setup. Build dependencies are installed by the scripts. On Windows, Nuitka uses MSVC when available, otherwise MinGW64.
+Build scripts install dependencies automatically. Nuitka uses MSVC when available, otherwise MinGW64.
 
-### Application (standalone folder)
-
-```powershell
-.\scripts\build_nuitka.ps1
-```
-
-Output: `dist\MediaManager\MediaManager.exe`
-
-Optional single-file build:
+### Application
 
 ```powershell
-.\scripts\build_nuitka.ps1 -Mode onefile
+.\scripts\build_nuitka.ps1              # dist\MediaManager\MediaManager.exe
+.\scripts\build_nuitka.ps1 -Mode onefile  # dist\MediaManager.exe
 ```
 
-Output: `dist\MediaManager.exe`
-
-Legacy alias: `.\scripts\build_exe.ps1`
-
-### Windows installer
-
-Builds the app plus a single-file setup executable (PyQt6 wizard + Nuitka onefile, `--include-raw-dir` payload):
+### Installer
 
 ```powershell
 .\scripts\build_installer.ps1
+# → dist_installer\MediaManagerSetup_0.0.3.exe
 ```
 
-Or directly:
+Silent flags for in-app updates: `/VERYSILENT`, `/SUPPRESSMSGBOXES`, `/NORESTART`, `/CLOSEAPPLICATIONS`, optional `/DIR=...`.
 
-```powershell
-.\scripts\build_nuitka_installer.ps1
-```
-
-Output: `dist_installer\MediaManagerSetup_0.0.3.exe` (version follows `src/version.py`)
-
-The installer:
-
-- Defaults to `C:\Program Files\Media Manager` (folder picker when run interactively)
-- Creates a Start Menu shortcut and registers **Apps & features** uninstall
-- Supports silent flags for in-app updates: `/VERYSILENT`, `/SUPPRESSMSGBOXES`, `/NORESTART`, `/CLOSEAPPLICATIONS`, optional `/DIR=...`
-
-### Portable (portal) zip
+### Portable zip
 
 ```powershell
 .\scripts\build_portal.ps1
+# → dist_portal\MediaManagerPortal_v0.0.3.zip
 ```
 
-Output:
-
-- `dist_portal\MediaManager\` — run `MediaManager.exe` directly
-- `dist_portal\MediaManagerPortal_v0.0.3.zip` — distribute this
-
 ---
 
-## Quick test workflow
+## Config & data paths
 
-1. **Add Library Root** — select `test_data\library` or your real download folder.
-2. **Discover / Scan** — find and index `[Original Name]` extraction folders under roots.
-3. **Review Name Matches** — dismiss, mark different, or **Verify with Hash**.
-4. Select a folder → **Reorganize ([Collections])** — preview flatten/rename with progress bar, percentage, and ETA.
-5. **Show in Explorer** — open the selected folder in Windows Explorer (when online).
-
----
-
-## Config & database
-
-**Installed edition** (default):
+**Installed edition**
 
 | Item | Path |
 |------|------|
 | Config | `%APPDATA%\MediaManager\config.json` |
-| Catalog DB | `%APPDATA%\MediaManager\catalog.db` |
-| Logs | `%APPDATA%\MediaManager\logs\media_manager.log` |
+| Database | `%APPDATA%\MediaManager\catalog.db` |
+| Logs | `%APPDATA%\MediaManager\logs\` |
 
-**Portable edition** — put `portable.marker` beside `MediaManager.exe`, or use the portal build script:
+**Portable edition** — `portable.marker` beside `MediaManager.exe`, or use the portal build:
 
 | Item | Path |
 |------|------|
 | Config | `data\config.json` |
-| Catalog DB | `data\catalog.db` |
+| Database | `data\catalog.db` |
 | Logs | `data\logs\` |
 
-Copy the **whole folder** (including `data\`) to move catalog and settings to another PC.
-
-Dev portable mode: create an empty `portable.marker` in the repo root and run `python src\main.py`.
+Copy the **entire folder** (including `data\`) to move catalog and settings to another PC.
 
 ---
 
 ## Application updates
 
-The app checks [GitHub Releases](https://github.com/HFDWKJ/MediaManager/releases) for newer versions.
-
-- **On startup** (default on) — prompt when a newer release is available
-- **Options → Check for updates…** — manual check and install
-- **Settings** — disable startup checks under **Updates**
-
-Publish releases with assets named like the build outputs:
-
-| Edition | Asset name |
-|---------|------------|
-| Installer | `MediaManagerSetup_0.0.3.exe` |
-| Portable | `MediaManagerPortal_v0.0.3.zip` |
-
-Tag releases `v0.0.3` (or `0.0.3`). Release notes in the GitHub release body appear in the update dialog.
-
-For **private** repositories, set `update.github_token` in config or the `GITHUB_TOKEN` environment variable. Public repos do not require a token.
-
----
-
-## GitHub (source & releases)
-
-Only **source code** is tracked in git — not `data\`, `dist\`, `dist_installer\`, `dist_portal\`, or local `catalog.db`.
-
-```powershell
-gh auth login
-.\scripts\push_to_github.ps1 -RepoUrl https://github.com/HFDWKJ/MediaManager.git
-```
-
-Day-to-day:
-
-```powershell
-git add .
-git commit -m "Describe your change"
-git push
-```
-
-Upload `dist_installer\*.exe` and `dist_portal\*.zip` to [GitHub Releases](https://github.com/HFDWKJ/MediaManager/releases) for distribution and auto-update.
+- **Startup check** (on by default) and **Options → Check for updates…**
+- Disable in **Settings → Updates**
+- Tag releases `v0.0.3`; release notes appear in the update dialog
+- Private repos: set `update.github_token` in config or `GITHUB_TOKEN` env var
 
 ---
 
@@ -232,26 +189,29 @@ Upload `dist_installer\*.exe` and `dist_portal\*.zip` to [GitHub Releases](https
 
 ```text
 src/
-  main.py                 Entry point
-  version.py              Version and developer metadata
-  core/                   Database, scan, match, reorganize, updates
-  gui/                    PyQt6 UI (ribbon, dialogs, workers)
-  installer/              Nuitka-based setup wizard
-  utils/                  Config, logging, paths, runtime detection
-assets/                   App icon (png + ico)
-scripts/                  Build, test data, push helpers
-docs/ROADMAP.md           Version plans and milestone checklist
-media_manager_plan.md     Cursor phased development plan (prompt library)
-CHANGELOG.md              Release notes (shown in About dialog)
+  main.py              Entry point
+  core/                Database, scan, match, reorganize, updates
+  gui/                 PyQt6 UI
+  installer/           Nuitka setup wizard
+  utils/               Config, logging, paths
+assets/                App icon
+scripts/               Build & helper scripts
+docs/ROADMAP.md        Milestone checklist
+media_manager_plan.md  Cursor phased development plan
+CHANGELOG.md           Release notes (shown in About dialog)
 ```
 
 ---
 
-## Roadmap & changelog
+## Roadmap & docs
 
-- **[docs/ROADMAP.md](docs/ROADMAP.md)** — version plans and v0.0.3 task checklist
-- **[GitHub Issues / Milestones](https://github.com/HFDWKJ/MediaManager/milestones)** — development tracking
-- **[CHANGELOG.md](CHANGELOG.md)** — release history; add a `## version — date` section for each release
+| Document | Description |
+|----------|-------------|
+| [README.zh-CN.md](README.zh-CN.md) | 简体中文文档 |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Version plans and v0.0.3 checklist |
+| [CHANGELOG.md](CHANGELOG.md) | Release history |
+| [GitHub Milestones](https://github.com/HFDWKJ/MediaManager/milestones) | Issue tracking |
+| [media_manager_plan.md](media_manager_plan.md) | Full Cursor development plan |
 
 ---
 
