@@ -5,7 +5,7 @@
 <h1 align="center">Media Manager</h1>
 
 <p align="center">
-  <a href="README.md">English</a> · <strong>简体中文</strong>
+  <a href="README.md">English</a> · <strong>简体中文</strong> · <a href="README.ja.md">日本語</a> · <a href="README.fr.md">Français</a> · <a href="README.de.md">Deutsch</a> · <a href="README.ko.md">한국어</a> · <a href="README.es.md">Español</a>
 </p>
 
 <p align="center">
@@ -214,7 +214,12 @@ CHANGELOG.md           更新日志（About 对话框中显示）
 
 | 文档 | 说明 |
 |------|------|
-| [README.md](README.md) | English documentation |
+| [README.md](README.md) | English |
+| [README.ja.md](README.ja.md) | 日本語 |
+| [README.fr.md](README.fr.md) | Français |
+| [README.de.md](README.de.md) | Deutsch |
+| [README.ko.md](README.ko.md) | 한국어 |
+| [README.es.md](README.es.md) | Español |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | 版本计划与 v0.0.3 任务清单 |
 | [CHANGELOG.md](CHANGELOG.md) | 版本更新记录 |
 | [GitHub Milestones](https://github.com/HFDWKJ/MediaManager/milestones) | Issue 跟踪 |

@@ -5,7 +5,7 @@
 <h1 align="center">Media Manager</h1>
 
 <p align="center">
-  <strong>English</strong> · <a href="README.zh-CN.md">简体中文</a>
+  <strong>English</strong> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.ja.md">日本語</a> · <a href="README.fr.md">Français</a> · <a href="README.de.md">Deutsch</a> · <a href="README.ko.md">한국어</a> · <a href="README.es.md">Español</a>
 </p>
 
 <p align="center">
@@ -207,7 +207,12 @@ CHANGELOG.md           Release notes (shown in About dialog)
 
 | Document | Description |
 |----------|-------------|
-| [README.zh-CN.md](README.zh-CN.md) | 简体中文文档 |
+| [README.zh-CN.md](README.zh-CN.md) | 简体中文 |
+| [README.ja.md](README.ja.md) | 日本語 |
+| [README.fr.md](README.fr.md) | Français |
+| [README.de.md](README.de.md) | Deutsch |
+| [README.ko.md](README.ko.md) | 한국어 |
+| [README.es.md](README.es.md) | Español |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Version plans and v0.0.3 checklist |
 | [CHANGELOG.md](CHANGELOG.md) | Release history |
 | [GitHub Milestones](https://github.com/HFDWKJ/MediaManager/milestones) | Issue tracking |
