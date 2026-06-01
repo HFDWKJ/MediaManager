@@ -17,8 +17,11 @@ $python = ".\.venv\Scripts\python.exe"
 & $python -m pip install "nuitka>=2.0" ordered-set
 
 $appVersion = (& $python -c "import sys; sys.path.insert(0, 'src'); from version import __version__; print(__version__)").Trim()
-$fileVersion = "$appVersion.0"
 $developer = (& $python -c "import sys; sys.path.insert(0, 'src'); from version import __developer__; print(__developer__)").Trim()
+$versionParts = @($appVersion -split '\.' | ForEach-Object { [int]$_ })
+while ($versionParts.Count -lt 4) { $versionParts += 0 }
+if ($versionParts.Count -gt 4) { $versionParts = $versionParts[0..3] }
+$fileVersion = ($versionParts -join '.')
 $iconIco = "assets\media_manager_app_icon.ico"
 
 if (-not (Test-Path $iconIco)) {
