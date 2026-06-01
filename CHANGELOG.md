@@ -2,6 +2,21 @@
 
 All notable changes to Media Manager are documented here.
 
+## 0.0.4.1 — 2026-06-01
+
+Developer: **Dong, Zhexi**
+
+### Changed
+- **Installer packaging** — default build is now a **folder installer** (`MediaManagerSetup_*.zip`) instead of a Nuitka onefile exe, to reduce Windows Defender / Smart App Control false positives
+- In-app updates prefer the zip installer asset when both zip and exe are published
+
+### Fixed
+- Clearer update failure message when Windows blocks the installer (WinError 225)
+- Update downloads saved under `%LOCALAPPDATA%\MediaManager\Updates\`
+
+### Docs
+- [docs/WINDOWS_INSTALL.md](docs/WINDOWS_INSTALL.md) — install steps and antivirus guidance
+
 ## 0.0.4 — 2026-06-01
 
 Developer: **Dong, Zhexi**

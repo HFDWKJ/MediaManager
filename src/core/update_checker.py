@@ -18,12 +18,18 @@ log = logging.getLogger(__name__)
 DEFAULT_GITHUB_REPO = "HFDWKJ/MediaManager"
 USER_AGENT = f"MediaManager/{__version__}"
 
-INSTALLER_PATTERN = re.compile(
-    r"^MediaManagerSetup[_-]?(\d+\.\d+\.\d+)\.exe$",
+INSTALLER_EXE_PATTERN = re.compile(
+    r"^MediaManagerSetup[_-]?(\d+(?:\.\d+)+)\.exe$",
     re.IGNORECASE,
 )
+INSTALLER_ZIP_PATTERN = re.compile(
+    r"^MediaManagerSetup[_-]?(\d+(?:\.\d+)+)\.zip$",
+    re.IGNORECASE,
+)
+# Legacy alias
+INSTALLER_PATTERN = INSTALLER_EXE_PATTERN
 PORTAL_PATTERN = re.compile(
-    r"^MediaManagerPortal[_-]?v?(\d+\.\d+\.\d+)\.zip$",
+    r"^MediaManagerPortal[_-]?v?(\d+(?:\.\d+)+)\.zip$",
     re.IGNORECASE,
 )
 
@@ -37,7 +43,7 @@ class ReleaseAsset:
     filename: str
     download_url: str
     size_bytes: int
-    kind: str  # "installer" | "portal"
+    kind: str  # "installer" | "installer_zip" | "portal"
 
 
 class UpdateCheckError(Exception):
@@ -120,10 +126,22 @@ def _pick_asset(
     assets: list[dict[str, Any]],
     *,
     portable: bool,
-) -> tuple[str, str, int] | None:
-    pattern = PORTAL_PATTERN if portable else INSTALLER_PATTERN
-    fallback_ext = ".zip" if portable else ".exe"
-    best: tuple[str, str, int, tuple[int, ...]] | None = None
+) -> tuple[str, str, int, str] | None:
+    """Return (filename, url, size, kind) for the best matching asset."""
+    if portable:
+        patterns: list[tuple[re.Pattern[str], str, int]] = [
+            (PORTAL_PATTERN, "portal", 0),
+        ]
+        fallback_ext = ".zip"
+    else:
+        # Prefer folder installer zip over onefile exe (fewer Defender false positives).
+        patterns = [
+            (INSTALLER_ZIP_PATTERN, "installer_zip", 1),
+            (INSTALLER_EXE_PATTERN, "installer", 0),
+        ]
+        fallback_ext = ".exe"
+
+    best: tuple[str, str, int, str, tuple[int, ...], int] | None = None
 
     for asset in assets:
         if not isinstance(asset, dict):
@@ -132,21 +150,38 @@ def _pick_asset(
         url = str(asset.get("browser_download_url", ""))
         if not name or not url:
             continue
-        match = pattern.match(name)
-        if match:
-            ver = match.group(1)
-        elif name.lower().endswith(fallback_ext) and "mediamanager" in name.lower():
-            ver = "0.0.0"
-        else:
-            continue
+
+        matched_kind = ""
+        ver = ""
+        priority = -1
+        for pattern, kind, prio in patterns:
+            match = pattern.match(name)
+            if match:
+                matched_kind = kind
+                ver = match.group(1)
+                priority = prio
+                break
+        if not matched_kind:
+            if name.lower().endswith(fallback_ext) and "mediamanager" in name.lower():
+                matched_kind = patterns[0][1]
+                ver = "0.0.0"
+                priority = patterns[0][2]
+            else:
+                continue
+
         size = int(asset.get("size", 0) or 0)
-        candidate = (name, url, size, parse_version(ver))
-        if best is None or candidate[3] > best[3]:
+        candidate = (name, url, size, matched_kind, parse_version(ver), priority)
+        if best is None:
+            best = candidate
+            continue
+        if candidate[4] > best[4]:
+            best = candidate
+        elif candidate[4] == best[4] and candidate[5] > best[5]:
             best = candidate
 
     if best is None:
         return None
-    return best[0], best[1], best[2]
+    return best[0], best[1], best[2], best[3]
 
 
 def fetch_latest_release(
@@ -201,7 +236,7 @@ def fetch_latest_release(
         log.info("Release %s has no matching %s asset", version, "portal" if portable else "installer")
         return None
 
-    filename, url, size = picked
+    filename, url, size, kind = picked
     return ReleaseAsset(
         version=version,
         tag_name=str(release.get("tag_name", version)),
@@ -210,5 +245,5 @@ def fetch_latest_release(
         filename=filename,
         download_url=url,
         size_bytes=size,
-        kind="portal" if portable else "installer",
+        kind=kind,
     )

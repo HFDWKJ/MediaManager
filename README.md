@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  <b>Version:</b> 0.0.4 · <b>Developer:</b> Dong, Zhexi
+  <b>Version:</b> 0.0.4.1 · <b>Developer:</b> Dong, Zhexi
 </p>
 
 ---
@@ -61,11 +61,12 @@ Pre-built binaries are published on **[GitHub Releases](https://github.com/HFDWK
 
 | Edition | File |
 |---------|------|
-| Installer | `MediaManagerSetup_0.0.4.exe` |
-| Portable zip | `MediaManagerPortal_v0.0.4.zip` |
+| Installer (recommended) | `MediaManagerSetup_0.0.4.1.zip` — extract, then run the `.exe` inside |
+| Portable zip | `MediaManagerPortal_v0.0.4.1.zip` |
+| Legacy onefile installer | `MediaManagerSetup_*.exe` (older releases; more likely to be flagged) |
 
 > [!NOTE]
-> **Smart App Control:** Unsigned builds may be blocked on Windows 11. Turn off SAC on a test machine, or sign the installer for production use.
+> **Antivirus / Smart App Control:** Unsigned builds may be blocked. Use the **folder installer zip** or portable edition. See [docs/WINDOWS_INSTALL.md](docs/WINDOWS_INSTALL.md).
 
 ---
 
@@ -140,7 +141,8 @@ Build scripts install dependencies automatically. Nuitka uses MSVC when availabl
 
 ```powershell
 .\scripts\build_installer.ps1
-# → dist_installer\MediaManagerSetup_0.0.4.exe
+# → dist_installer\MediaManagerSetup_0.0.4.1.zip (folder installer, recommended)
+# Optional legacy onefile: .\scripts\build_installer.ps1 -InstallerMode onefile
 ```
 
 Silent flags for in-app updates: `/VERYSILENT`, `/SUPPRESSMSGBOXES`, `/NORESTART`, `/CLOSEAPPLICATIONS`, optional `/DIR=...`.

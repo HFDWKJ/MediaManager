@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import sys
 import webbrowser
+from pathlib import Path
 
+from PyQt6.QtCore import QUrl
+from PyQt6.QtGui import QDesktopServices
 from PyQt6.QtWidgets import (
     QApplication,
     QDialog,
@@ -18,13 +21,46 @@ from PyQt6.QtWidgets import (
 )
 
 from core.update_checker import ReleaseAsset
-from core.update_installer import UpdateInstallError, can_apply_in_app_update
+from core.update_installer import (
+    UpdateInstallError,
+    can_apply_in_app_update,
+    update_download_dir,
+)
 from gui.workers import UpdateCheckWorker, UpdateDownloadWorker
 from version import __version__
 
 
 def _releases_page_url(repo: str) -> str:
     return f"https://github.com/{repo}/releases"
+
+
+def _show_update_failure(
+    parent,
+    message: str,
+    *,
+    repo: str = "HFDWKJ/MediaManager",
+    installer_path: Path | None = None,
+) -> None:
+    box = QMessageBox(parent)
+    box.setIcon(QMessageBox.Icon.Critical)
+    box.setWindowTitle("Update failed")
+    box.setText(message)
+    open_folder_btn = box.addButton(
+        "Open download folder",
+        QMessageBox.ButtonRole.ActionRole,
+    )
+    open_releases_btn = box.addButton(
+        "Open GitHub Releases",
+        QMessageBox.ButtonRole.ActionRole,
+    )
+    box.addButton(QMessageBox.StandardButton.Ok)
+    box.exec()
+    clicked = box.clickedButton()
+    if clicked is open_folder_btn:
+        folder = installer_path.parent if installer_path else update_download_dir()
+        QDesktopServices.openUrl(QUrl.fromLocalFile(str(folder.resolve())))
+    elif clicked is open_releases_btn:
+        webbrowser.open(_releases_page_url(repo))
 
 
 class UpdateAvailableDialog(QDialog):
@@ -154,12 +190,16 @@ class UpdateProgressDialog(QDialog):
 
     def _on_finished(self, package_path: str) -> None:
         from core.update_installer import apply_update
-        from pathlib import Path
 
+        path = Path(package_path)
         try:
-            apply_update(Path(package_path), self.release)
+            apply_update(path, self.release)
         except UpdateInstallError as e:
-            QMessageBox.critical(self, "Update failed", str(e))
+            _show_update_failure(
+                self,
+                str(e),
+                installer_path=path if path.is_file() else None,
+            )
             self.reject()
             return
 
@@ -177,7 +217,7 @@ class UpdateProgressDialog(QDialog):
             sys.exit(0)
 
     def _on_error(self, message: str) -> None:
-        QMessageBox.critical(self, "Update failed", message)
+        _show_update_failure(self, message)
         self.reject()
 
 

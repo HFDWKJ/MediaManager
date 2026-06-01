@@ -25,6 +25,39 @@ class UpdateInstallError(Exception):
     pass
 
 
+def update_download_dir() -> Path:
+    """Stable folder for downloaded installers (easier to exclude in Windows Security)."""
+    path = Path(os.environ.get("LOCALAPPDATA", Path.home())) / "MediaManager" / "Updates"
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def is_windows_security_block(exc: BaseException) -> bool:
+    winerror = getattr(exc, "winerror", None)
+    return winerror in (225, 226)
+
+
+def format_install_error(
+    exc: BaseException,
+    *,
+    installer_path: Path | None = None,
+) -> str:
+    if is_windows_security_block(exc):
+        path_line = f"\n\nInstaller file:\n{installer_path}" if installer_path else ""
+        return (
+            "Windows blocked the update installer (antivirus / Smart App Control).\n\n"
+            "Unsigned Nuitka builds are often flagged as potentially unwanted software. "
+            "This is a Windows security block, not a Media Manager bug.\n\n"
+            "Try one of these:\n"
+            "• Windows Security → Protection history → Allow / Restore the file\n"
+            "• Add an exclusion for the folder above (or for MediaManager)\n"
+            "• Download from GitHub Releases and run the installer manually\n"
+            "• On a test PC only: turn off Smart App Control in Windows Security"
+            + path_line
+        )
+    return f"Could not start installer: {exc}"
+
+
 def download_release_asset(
     asset: ReleaseAsset,
     dest_dir: Path,
@@ -68,20 +101,51 @@ def apply_update(package_path: Path, asset: ReleaseAsset) -> None:
     _apply_installer_update(package_path)
 
 
+def _resolve_setup_executable(package_path: Path) -> Path:
+    """Return MediaManagerSetup_*.exe from a setup exe or folder-installer zip."""
+    if not package_path.is_file():
+        raise UpdateInstallError(f"Installer not found: {package_path}")
+
+    if package_path.suffix.lower() != ".zip":
+        return package_path
+
+    staging = Path(tempfile.mkdtemp(prefix="mm_setup_"))
+    try:
+        with zipfile.ZipFile(package_path, "r") as zf:
+            zf.extractall(staging)
+    except (OSError, zipfile.BadZipFile) as e:
+        raise UpdateInstallError(f"Could not extract installer package: {e}") from e
+
+    search_roots = [staging, *staging.iterdir()]
+    for root in search_roots:
+        if not root.is_dir():
+            continue
+        matches = sorted(root.glob("MediaManagerSetup_*.exe"))
+        if matches:
+            return matches[0]
+
+    raise UpdateInstallError(
+        "Installer zip does not contain MediaManagerSetup_*.exe. "
+        "Extract the zip and run the setup exe inside the folder."
+    )
+
+
 def _apply_installer_update(installer_path: Path) -> None:
-    if not installer_path.is_file():
-        raise UpdateInstallError(f"Installer not found: {installer_path}")
+    setup_exe = _resolve_setup_executable(installer_path)
     params = ["/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/CLOSEAPPLICATIONS"]
     install_dir = application_root()
     if install_dir.is_dir():
         params.append(f'/DIR={install_dir}')
     try:
         subprocess.Popen(
-            [str(installer_path), *params],
+            [str(setup_exe), *params],
+            cwd=str(setup_exe.parent),
             close_fds=True,
         )
     except OSError as e:
-        raise UpdateInstallError(f"Could not start installer: {e}") from e
+        raise UpdateInstallError(
+            format_install_error(e, installer_path=setup_exe)
+        ) from e
 
 
 def _apply_portable_update(zip_path: Path, app_root: Path) -> None:

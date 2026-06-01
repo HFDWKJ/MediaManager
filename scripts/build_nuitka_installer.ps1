@@ -1,17 +1,13 @@
 param(
-  [ValidateSet("standalone", "onefile", "onedir")]
-  [string]$BuildMode = "standalone"
+  [ValidateSet("standalone", "onefile")]
+  [string]$InstallerMode = "standalone"
 )
 
 $ErrorActionPreference = "Stop"
 Set-Location (Split-Path $PSScriptRoot -Parent)
 
-if ($BuildMode -eq "onedir") {
-  $BuildMode = "standalone"
-}
-
-Write-Host "Building application ($BuildMode)..." -ForegroundColor Cyan
-& ".\scripts\build_nuitka.ps1" -Mode $BuildMode
+Write-Host "Building application (standalone)..." -ForegroundColor Cyan
+& ".\scripts\build_nuitka.ps1" -Mode standalone
 
 $payloadDir = Join-Path (Get-Location) "dist\MediaManager"
 if (-not (Test-Path (Join-Path $payloadDir "MediaManager.exe"))) {
@@ -31,21 +27,27 @@ if (-not (Test-Path $iconIco)) {
 Set-Content -Path (Join-Path $payloadDir "version.txt") -Value $appVersion -Encoding utf8
 
 $outDir = Join-Path (Get-Location) "dist_installer"
-New-Item -ItemType Directory -Force -Path $outDir | Out-Null
-$setupName = "MediaManagerSetup_$appVersion.exe"
-$setupPath = Join-Path $outDir $setupName
+$buildDir = Join-Path $outDir "_build"
+if (Test-Path $buildDir) {
+  Remove-Item $buildDir -Recurse -Force
+}
+New-Item -ItemType Directory -Force -Path $buildDir | Out-Null
 
-Write-Host "Building Nuitka installer -> $setupName" -ForegroundColor Cyan
+$setupExeName = "MediaManagerSetup_$appVersion.exe"
+$stageName = "MediaManagerSetup_$appVersion"
+$stageDir = Join-Path $outDir $stageName
+$zipPath = Join-Path $outDir "$stageName.zip"
+
+Write-Host "Building Nuitka installer ($InstallerMode) -> $setupExeName" -ForegroundColor Cyan
 
 $nuitkaArgs = @(
   "src/installer/main.py",
-  "--onefile",
   "--assume-yes-for-downloads",
   "--windows-console-mode=disable",
   "--windows-uac-admin",
   "--include-raw-dir=$payloadDir=payload",
-  "--output-dir=$outDir",
-  "--output-filename=$setupName",
+  "--output-dir=$buildDir",
+  "--output-filename=$setupExeName",
   "--company-name=$developer",
   "--product-name=Media Manager Setup",
   "--file-version=$fileVersion",
@@ -53,6 +55,13 @@ $nuitkaArgs = @(
   "--windows-icon-from-ico=$iconIco",
   "--remove-output"
 )
+
+if ($InstallerMode -eq "onefile") {
+  $nuitkaArgs = @("--onefile") + $nuitkaArgs
+  Write-Host "Note: onefile installers are more likely to be flagged by Windows Defender." -ForegroundColor Yellow
+} else {
+  $nuitkaArgs = @("--standalone") + $nuitkaArgs
+}
 
 $hasCl = Get-Command cl.exe -ErrorAction SilentlyContinue
 $pyMinor = [int](& $python -c "import sys; print(sys.version_info.minor)")
@@ -62,10 +71,55 @@ if (-not $hasCl -and $pyMinor -lt 13) {
 
 & $python -m nuitka @nuitkaArgs
 
-if (-not (Test-Path $setupPath)) {
-  throw "Installer build failed: $setupPath not found"
+function Resolve-InstallerDist {
+  param([string]$Root)
+  $candidates = @(
+    (Join-Path $Root "installer.dist"),
+    (Join-Path $Root "main.dist")
+  )
+  foreach ($dir in $candidates) {
+    $exe = Join-Path $dir $setupExeName
+    if ((Test-Path $dir) -and (Test-Path $exe)) {
+      return (Resolve-Path $dir).Path
+    }
+  }
+  return $null
 }
 
+if ($InstallerMode -eq "onefile") {
+  $onefile = Join-Path $buildDir $setupExeName
+  if (-not (Test-Path $onefile)) {
+    throw "Installer onefile build failed: $onefile not found"
+  }
+  Copy-Item $onefile (Join-Path $outDir $setupExeName) -Force
+  Write-Host ""
+  Write-Host "Installer build complete (onefile)." -ForegroundColor Green
+  Write-Host "Output: $outDir\$setupExeName"
+  exit 0
+}
+
+$builtDir = Resolve-InstallerDist -Root $buildDir
+if (-not $builtDir) {
+  throw "Installer standalone build failed: could not find installer.dist with $setupExeName"
+}
+
+if (Test-Path $stageDir) {
+  Remove-Item $stageDir -Recurse -Force
+}
+Copy-Item $builtDir $stageDir -Recurse
+
+if (-not (Test-Path (Join-Path $stageDir "payload\MediaManager.exe"))) {
+  throw "Staged installer is missing payload\MediaManager.exe"
+}
+
+if (Test-Path $zipPath) {
+  Remove-Item $zipPath -Force
+}
+Compress-Archive -Path $stageDir -DestinationPath $zipPath -CompressionLevel Optimal
+
 Write-Host ""
-Write-Host "Installer build complete." -ForegroundColor Green
-Write-Host "Output: $setupPath"
+Write-Host "Installer build complete (standalone folder)." -ForegroundColor Green
+Write-Host "  Folder: $stageDir"
+Write-Host "  Zip:    $zipPath"
+Write-Host ""
+Write-Host "User steps: extract the zip, then run $setupExeName inside the folder."
