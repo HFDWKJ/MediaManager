@@ -25,6 +25,32 @@ class UpdateInstallError(Exception):
     pass
 
 
+def update_download_dir() -> Path:
+    path = Path(os.environ.get("LOCALAPPDATA", Path.home())) / "MediaManager" / "Updates"
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def is_windows_security_block(exc: BaseException) -> bool:
+    return getattr(exc, "winerror", None) in (225, 226)
+
+
+def format_install_error(
+    exc: BaseException,
+    *,
+    installer_path: Path | None = None,
+) -> str:
+    if is_windows_security_block(exc):
+        path_line = f"\n\nInstaller file:\n{installer_path}" if installer_path else ""
+        return (
+            "Windows blocked the update installer (antivirus / Smart App Control).\n\n"
+            "Add a Defender exclusion for the folder above, allow the file in "
+            "Protection history, or download the installer from GitHub Releases."
+            + path_line
+        )
+    return f"Could not start installer: {exc}"
+
+
 def download_release_asset(
     asset: ReleaseAsset,
     dest_dir: Path,
@@ -81,7 +107,9 @@ def _apply_installer_update(installer_path: Path) -> None:
             close_fds=True,
         )
     except OSError as e:
-        raise UpdateInstallError(f"Could not start installer: {e}") from e
+        raise UpdateInstallError(
+            format_install_error(e, installer_path=installer_path)
+        ) from e
 
 
 def _apply_portable_update(zip_path: Path, app_root: Path) -> None:

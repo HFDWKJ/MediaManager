@@ -14,7 +14,7 @@ from core.extraction_import import discover_previews_all_roots, discover_preview
 from core.folder_preview import FolderPreview
 from core.reorganize import build_reorganize_plan, execute_reorganize
 from core.update_checker import DEFAULT_GITHUB_REPO, ReleaseAsset, UpdateCheckError, fetch_latest_release
-from core.update_installer import download_release_asset
+from core.update_installer import download_release_asset, update_download_dir
 from utils.paths import is_portable_mode
 
 
@@ -124,7 +124,7 @@ class UpdateDownloadWorker(QThread):
 
     def run(self) -> None:
         try:
-            dest = Path(tempfile.mkdtemp(prefix="mm_dl_"))
+            dest = update_download_dir()
 
             def prog(cur: int, total: int) -> None:
                 self.progress.emit(cur, total)

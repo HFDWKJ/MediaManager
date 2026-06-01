@@ -6,6 +6,10 @@ All notable changes to Media Manager are documented here.
 
 Developer: **Dong, Zhexi**
 
+### Fixed
+- In-app update scans all stable (non-prerelease) GitHub releases and picks the newest matching `MediaManagerSetup_*.exe`, so older apps are not confused when a develop-only release has zip-only assets
+- Clearer error when Windows Defender blocks the installer; downloads go to `%LOCALAPPDATA%\MediaManager\Updates\`
+
 ### Added
 - **Multilingual README** — documentation in English, 简体中文, 日本語, Français, Deutsch, 한국어, and Español with a shared language switcher
 - **Cursor & Vibe Coding** project documentation on the GitHub homepage

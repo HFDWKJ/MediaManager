@@ -19,11 +19,11 @@ DEFAULT_GITHUB_REPO = "HFDWKJ/MediaManager"
 USER_AGENT = f"MediaManager/{__version__}"
 
 INSTALLER_PATTERN = re.compile(
-    r"^MediaManagerSetup[_-]?(\d+\.\d+\.\d+)\.exe$",
+    r"^MediaManagerSetup[_-]?(\d+(?:\.\d+)+)\.exe$",
     re.IGNORECASE,
 )
 PORTAL_PATTERN = re.compile(
-    r"^MediaManagerPortal[_-]?v?(\d+\.\d+\.\d+)\.zip$",
+    r"^MediaManagerPortal[_-]?v?(\d+(?:\.\d+)+)\.zip$",
     re.IGNORECASE,
 )
 
@@ -149,6 +149,34 @@ def _pick_asset(
     return best[0], best[1], best[2]
 
 
+def _release_to_asset(
+    release: dict[str, Any],
+    *,
+    portable: bool,
+    current_version: str,
+) -> ReleaseAsset | None:
+    version = _version_from_release(release)
+    if not version or not is_newer_version(version, current_version):
+        return None
+    assets = release.get("assets")
+    if not isinstance(assets, list):
+        return None
+    picked = _pick_asset(assets, portable=portable)
+    if picked is None:
+        return None
+    filename, url, size = picked
+    return ReleaseAsset(
+        version=version,
+        tag_name=str(release.get("tag_name", version)),
+        name=str(release.get("name", version)),
+        body=str(release.get("body", "") or "").strip(),
+        filename=filename,
+        download_url=url,
+        size_bytes=size,
+        kind="portal" if portable else "installer",
+    )
+
+
 def fetch_latest_release(
     repo: str = DEFAULT_GITHUB_REPO,
     *,
@@ -162,53 +190,35 @@ def fetch_latest_release(
     token = resolve_github_token(github_token)
     base = f"https://api.github.com/repos/{repo}"
 
-    release = _api_request(f"{base}/releases/latest", token=token)
-    if release is None:
-        releases = _api_request(f"{base}/releases", token=token)
-        if not isinstance(releases, list):
-            if not _repo_accessible(repo, token=token):
-                if not token:
-                    raise UpdateCheckError(
-                        "Cannot access the GitHub repository. "
-                        "If the repository is private, set update.github_token in "
-                        "config.json or the GITHUB_TOKEN environment variable."
-                    )
-                raise UpdateCheckError("GitHub repository not found or not accessible.")
-            return None
-        for item in releases:
-            if not isinstance(item, dict):
-                continue
-            if item.get("draft") or item.get("prerelease"):
-                continue
-            release = item
-            break
-        if release is None:
-            return None
-
-    if not isinstance(release, dict):
+    releases = _api_request(f"{base}/releases", token=token)
+    if not isinstance(releases, list):
+        if not _repo_accessible(repo, token=token):
+            if not token:
+                raise UpdateCheckError(
+                    "Cannot access the GitHub repository. "
+                    "If the repository is private, set update.github_token in "
+                    "config.json or the GITHUB_TOKEN environment variable."
+                )
+            raise UpdateCheckError("GitHub repository not found or not accessible.")
         return None
 
-    version = _version_from_release(release)
-    if not version or not is_newer_version(version, current_version):
-        return None
+    best: ReleaseAsset | None = None
+    best_ver: tuple[int, ...] = ()
 
-    assets = release.get("assets")
-    if not isinstance(assets, list):
-        return None
+    for item in releases:
+        if not isinstance(item, dict) or item.get("draft"):
+            continue
+        # Skip prerelease builds (e.g. develop branch v0.0.4.1 zip installer).
+        if item.get("prerelease"):
+            continue
+        candidate = _release_to_asset(item, portable=portable, current_version=current_version)
+        if candidate is None:
+            continue
+        ver_tuple = parse_version(candidate.version)
+        if best is None or ver_tuple > best_ver:
+            best = candidate
+            best_ver = ver_tuple
 
-    picked = _pick_asset(assets, portable=portable)
-    if picked is None:
-        log.info("Release %s has no matching %s asset", version, "portal" if portable else "installer")
-        return None
-
-    filename, url, size = picked
-    return ReleaseAsset(
-        version=version,
-        tag_name=str(release.get("tag_name", version)),
-        name=str(release.get("name", version)),
-        body=str(release.get("body", "") or "").strip(),
-        filename=filename,
-        download_url=url,
-        size_bytes=size,
-        kind="portal" if portable else "installer",
-    )
+    if best is None:
+        log.info("No newer release with a matching %s asset", "portal" if portable else "installer")
+    return best
