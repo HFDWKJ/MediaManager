@@ -70,6 +70,9 @@ def _apply_installer_update(installer_path: Path) -> None:
     if not installer_path.is_file():
         raise UpdateInstallError(f"Installer not found: {installer_path}")
     params = ["/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/CLOSEAPPLICATIONS"]
+    install_dir = application_root()
+    if install_dir.is_dir():
+        params.append(f'/DIR={install_dir}')
     try:
         subprocess.Popen(
             [str(installer_path), *params],

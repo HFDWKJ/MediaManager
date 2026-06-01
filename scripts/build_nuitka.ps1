@@ -19,6 +19,11 @@ $python = ".\.venv\Scripts\python.exe"
 $appVersion = (& $python -c "import sys; sys.path.insert(0, 'src'); from version import __version__; print(__version__)").Trim()
 $fileVersion = "$appVersion.0"
 $developer = (& $python -c "import sys; sys.path.insert(0, 'src'); from version import __developer__; print(__developer__)").Trim()
+$iconIco = "assets\media_manager_app_icon.ico"
+
+if (-not (Test-Path $iconIco)) {
+  throw "Missing app icon: $iconIco"
+}
 
 Write-Host "Building with Nuitka ($Mode) v$appVersion..." -ForegroundColor Cyan
 
@@ -32,12 +37,14 @@ $nuitkaArgs = @(
   "--include-package=utils",
   "--include-module=version",
   "--include-data-files=CHANGELOG.md=CHANGELOG.md",
+  "--include-data-files=$iconIco=media_manager_app_icon.ico",
   "--output-dir=dist",
   "--output-filename=MediaManager.exe",
   "--company-name=$developer",
   "--product-name=Media Manager",
   "--file-version=$fileVersion",
   "--product-version=$fileVersion",
+  "--windows-icon-from-ico=$iconIco",
   "--remove-output"
 )
 

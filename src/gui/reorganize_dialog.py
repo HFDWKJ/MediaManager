@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import time
+
 from PyQt6.QtWidgets import (
     QDialog, QHBoxLayout, QLabel, QLineEdit, QMessageBox, QPushButton,
-    QTableWidget, QTableWidgetItem, QVBoxLayout,
+    QProgressBar, QTableWidget, QTableWidgetItem, QVBoxLayout,
 )
 
 from core.database import Database, FOLDER_TYPE_COLLECTION
@@ -20,6 +22,7 @@ class ReorganizeDialog(QDialog):
         self.extraction_id = extraction_id
         self.config = config
         self.plan = None
+        self._run_started_at: float | None = None
         self.setWindowTitle("Reorganize — New Folder Name")
         self.resize(800, 500)
         layout = QVBoxLayout(self)
@@ -39,6 +42,16 @@ class ReorganizeDialog(QDialog):
         )
         self.table.horizontalHeader().setStretchLastSection(True)
         layout.addWidget(self.table)
+
+        self.progress_label = QLabel("Ready")
+        self.progress_label.setObjectName("dgPanelHint")
+        layout.addWidget(self.progress_label)
+        self.progress = QProgressBar()
+        self.progress.setRange(0, 100)
+        self.progress.setValue(0)
+        self.progress.setFormat("%p%")
+        self.progress.setVisible(False)
+        layout.addWidget(self.progress)
 
         btn_row = QHBoxLayout()
         self.run_btn = QPushButton("Confirm & Reorganize")
@@ -93,13 +106,34 @@ class ReorganizeDialog(QDialog):
         if reply != QMessageBox.StandardButton.Yes:
             return
         self.run_btn.setEnabled(False)
+        self.preview_btn.setEnabled(False)
+        self.name_input.setEnabled(False)
+        self.progress.setVisible(True)
+        self.progress.setRange(0, len(self.plan.rows) if self.plan.rows else 1)
+        self.progress.setValue(0)
+        self._run_started_at = time.monotonic()
+        self.progress_label.setText("Reorganize started… (0.0% • ETA --:--)")
         self._worker = ReorganizeWorker(self.db, self.plan, self.config)
+        self._worker.progress.connect(self._on_progress)
         self._worker.finished_ok.connect(self._on_done)
         self._worker.error.connect(self._on_error)
         self._worker.start()
 
+    def _on_progress(self, cur: int, total: int, name: str) -> None:
+        total = max(1, total)
+        cur = min(cur, total)
+        self.progress.setRange(0, total)
+        self.progress.setValue(cur)
+        percent = (cur / total) * 100.0
+        eta_text = self._eta_text(cur, total)
+        self.progress_label.setText(
+            f"Processing {cur}/{total} ({percent:.1f}% • ETA {eta_text}): {name}"
+        )
+
     def _on_done(self, ok: bool) -> None:
         if ok:
+            self.progress.setValue(self.progress.maximum())
+            self.progress_label.setText("Reorganize completed. (100.0% • ETA 00:00)")
             QMessageBox.information(
                 self,
                 "Done",
@@ -116,8 +150,27 @@ class ReorganizeDialog(QDialog):
             self.accept()
         else:
             QMessageBox.warning(self, "Failed", "Reorganize failed. Check logs.")
-            self.run_btn.setEnabled(True)
+            self._reset_controls_after_run()
 
     def _on_error(self, msg: str) -> None:
         QMessageBox.warning(self, "Error", msg)
+        self.progress_label.setText("Reorganize failed.")
+        self._reset_controls_after_run()
+
+    def _reset_controls_after_run(self) -> None:
         self.run_btn.setEnabled(True)
+        self.preview_btn.setEnabled(True)
+        self.name_input.setEnabled(True)
+        self._run_started_at = None
+
+    def _eta_text(self, cur: int, total: int) -> str:
+        if cur <= 0 or self._run_started_at is None:
+            return "--:--"
+        elapsed = max(0.0, time.monotonic() - self._run_started_at)
+        avg_per_item = elapsed / cur
+        remaining_sec = int(round(avg_per_item * max(0, total - cur)))
+        minutes, seconds = divmod(remaining_sec, 60)
+        if minutes >= 60:
+            hours, minutes = divmod(minutes, 60)
+            return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        return f"{minutes:02d}:{seconds:02d}"

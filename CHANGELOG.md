@@ -6,6 +6,14 @@ All notable changes to Media Manager are documented here.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) and [GitHub milestone v0.0.3](https://github.com/HFDWKJ/MediaManager/milestone/1).
 
+### Added
+- Update 1: Added application icon (`assets/media_manager_app_icon.png` + `assets/media_manager_app_icon.ico`)
+- App window now loads icon in both source run and packaged run
+- Nuitka build scripts now embed icon into app exe and installer exe
+- Update 2: Reorganize dialog now shows a graphical progress bar during processing
+- Reorganize progress now displays percentage and ETA (estimated remaining time)
+- Reorganize progress text now shows current item index/total and current filename
+
 ### Planned
 - PyQt6 step-by-step installer (Nuitka; no Inno Setup)
 - Installer build/regression checks
